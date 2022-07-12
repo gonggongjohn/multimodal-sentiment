@@ -1,0 +1,4 @@
+.DS_Store
+data/source
+__pycache__/
+*$py.class
