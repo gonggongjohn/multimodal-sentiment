@@ -3,3 +3,4 @@ data/source
 __pycache__/
 *$py.class
 *.png
+log/

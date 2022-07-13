@@ -13,7 +13,7 @@ class MSRDataset(Dataset):
         for key in text_dict:
             text = text_dict[key]
             label = label_dict[key]
-            text_token = self.tokenizer.encode_plus(text, add_special_tokens=True, max_length=256, padding='max_length', truncation=True)
+            text_token = self.tokenizer.encode_plus(text, max_length=256, padding='max_length', truncation=True)
             self.texts.append(text_token)
             self.labels.append(label_mapping[label])
             self.index_id_map[index_cnt] = key
