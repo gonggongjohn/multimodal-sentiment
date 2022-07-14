@@ -12,6 +12,19 @@ Author: GONGGONGJOHN
 pip -r requirements.txt
 ```
 
+代码运行的主要依赖包及版本如下：
+
+```shell
+chardet 4.0.0
+matplotlib 3.3.2
+Pillow 9.2.0
+scikit_learn 1.1.1
+torch 1.9.0
+torchvision 0.10.0
+tqdm 4.64.0
+transformers 4.20.1
+```
+
 ## 目录结构
 
 ```
@@ -53,12 +66,25 @@ pip -r requirements.txt
 
 ## 模型结构
 
+PTAMSC的主要模型结构如下图所示：
+
 ![structure](assets/ptamsc_structure.png)
 
 ## 运行实验
 
 若要使用原数据集运行实验，请将图像/文本数据放在`data/source/`中。由于原数据集中包含非utf-8/ANSI编码文本，请先使用GBK编码打开并将其翻译为英语再进行读取。
 
+### 基准模型训练及测试
+
+```shell
+python baseline.py --data_path [数据集根目录]
+```
+
+### 主模型训练及测试
+
+```shell
+python main.py --do_train --do_eval --do_test --data_path [数据集根目录]
+```
 
 ## 参考文献
 
