@@ -1,4 +1,4 @@
-from data_utils import read_folder_text, read_train_tag, separate_train_test_by_label
+from data_utils import read_folder_text, read_train_tag, separate_train_test_by_label, read_img_by_id
 from data_pipe import MSRDataset
 from torch.utils.data import DataLoader
 from tqdm import tqdm
@@ -17,7 +17,8 @@ if __name__ == "__main__":
     train_label_dict = read_train_tag('data/train.txt')
     test_label_dict = read_train_tag('data/test_target.txt')
     train_text_dict, test_text_dict = separate_train_test_by_label(all_text_dict, train_label_dict, test_label_dict)
+    train_img_dict = read_img_by_id('data/source/', train_label_dict, 224)
+    test_img_dict = read_img_by_id('data/source/', test_label_dict, 224)
     label_map = {'neutral': 0, 'negative': 1, 'positive': 2}
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
-
 

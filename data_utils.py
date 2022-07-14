@@ -1,6 +1,8 @@
+from sklearn.metrics import precision_score, recall_score, f1_score
+from PIL import Image
+from torchvision import transforms
 import os
 import chardet
-from sklearn.metrics import precision_score, recall_score, f1_score
 
 
 def read_train_tag(path: str):
@@ -58,6 +60,32 @@ def separate_train_test_by_label(all_data_dict: dict, train_label_dict: dict, te
         if key in test_label_dict:
             test_dict[key] = all_data_dict[key]
     return train_dict, test_dict
+
+
+def read_img_by_id(dir_path: str, data_dict: dict, target_size: int):
+    img_dict = {}
+    img_transformer = transforms.Compose(
+        [
+            transforms.Resize(img_aligned_scale(target_size)),
+            transforms.CenterCrop(target_size),
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+        ]
+    )
+    for key in data_dict:
+        path = os.path.join(dir_path, '{0}.jpg'.format(key))
+        img = Image.open(path)
+        img.load()
+        img_transformed = img_transformer(img)
+        img_dict[key] = img_transformed
+    return img_dict
+
+
+def img_aligned_scale(target_size):
+    for i in range(20):
+        if 2 ** i >= target_size:
+            return 2 ** i
+    return target_size
 
 
 def evaluate_result(output_path: str, target_path: str):
