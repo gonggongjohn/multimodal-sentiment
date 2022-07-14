@@ -33,4 +33,5 @@ def evaluate_result(output_path: str, target_path: str):
 
 
 if __name__ == "__main__":
-    print(evaluate_result('test_gen_7312.txt', 'test_target.txt'))
+    print(evaluate_result('test_lyf.txt', 'test_target.txt'))
+    print(evaluate_result('test_predict.txt', 'test_target.txt'))

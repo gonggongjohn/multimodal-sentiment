@@ -20,6 +20,10 @@ pip -r requirements.txt
 └── data_utils.py
 ```
 
+## 模型结构
+
+![structure](assets/ptamsc_structure.png)
+
 ## 运行实验
 
 若要使用原数据集运行实验，请将图像/文本数据放在`data/source/`中。由于原数据集中包含非utf-8/ANSI编码文本，请先使用GBK编码打开并将其翻译为英语再进行读取。
