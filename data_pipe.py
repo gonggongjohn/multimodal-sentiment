@@ -4,9 +4,10 @@ import torch
 
 
 class MSRDataset(Dataset):
-    def __init__(self, text_dict: dict, img_dict: dict, label_dict, label_mapping: dict, tokenizer_name: str):
+    def __init__(self, text_dict: dict, img_dict: dict, label_dict, label_mapping: dict, text_tokenizer_name: str, img_tokenizer_name: str):
         self.index_id_map = {}
-        self.tokenizer = AutoTokenizer.from_pretrained(tokenizer_name)
+        self.tokenizer = AutoTokenizer.from_pretrained(text_tokenizer_name)
+        self.extractor = AutoFeatureExtractor.from_pretrained(img_tokenizer_name)
         self.texts = []
         self.imgs = []
         self.labels = []
@@ -20,6 +21,7 @@ class MSRDataset(Dataset):
             text_token = self.tokenizer.encode_plus(text, max_length=256, padding='max_length', truncation=True)
             self.texts.append(text_token)
             img = img_dict[key]
+            img = self.extractor(images=img)
             self.imgs.append(img)
             if label_dict is not None:
                 label = label_dict[key]

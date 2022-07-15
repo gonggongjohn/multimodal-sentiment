@@ -10,11 +10,23 @@ import torch
 def train_ptamsc(device: str, loss_log_file: str, eval_log_file: str, model, train_dataloader: DataLoader, eval_dataloader: DataLoader, iteration: int, lr_finetune: float, lr_downstream: float, warmup: int):
     optimizer = AdamW([
         {
-            'params': model.bert.parameters(),
+            'params': model.text_embedding.roberta.parameters(),
             'lr': lr_finetune
         },
         {
-            'params': model.dense.parameters(),
+            'params': model.img_embedding.swin.parameters(),
+            'lr': lr_finetune
+        },
+        {
+            'params': model.text_embedding.aligner.parameters(),
+            'lr': lr_downstream
+        },
+        {
+            'params': model.img_embedding.aligner.parameters(),
+            'lr': lr_downstream
+        },
+        {
+            'params': model.fuser.parameters(),
             'lr': lr_downstream
         }
     ])
@@ -30,14 +42,14 @@ def train_ptamsc(device: str, loss_log_file: str, eval_log_file: str, model, tra
         print('Training epoch {0}'.format(epoch + 1))
         model.train()
         for step, item in enumerate(tqdm(train_dataloader)):
-            texts_input_ids, text_attention_mask, text_token_type_ids, labels = item
+            texts_input_ids, text_attention_mask, imgs, labels = item
+            pixels = imgs['pixel_values'][0]
             texts_input_ids = texts_input_ids.to(device)
             text_attention_mask = text_attention_mask.to(device)
-            text_token_type_ids = text_token_type_ids.to(device)
+            pixels = pixels.to(device)
             model.zero_grad()
             labels = labels.to(device)
-            output = model(input_ids=texts_input_ids, attention_mask=text_attention_mask,
-                           token_type_ids=text_token_type_ids)
+            output = model(texts_input_ids, text_attention_mask, pixels)
             loss = loss_func(output, labels)
             f_loss_log.write('Step: {0},Loss: {1}\n'.format(epoch * len(train_dataloader) + step, loss.cpu().item()))
             loss.backward()
@@ -49,13 +61,13 @@ def train_ptamsc(device: str, loss_log_file: str, eval_log_file: str, model, tra
         test_label, test_output = [], []
         model.eval()
         for step, item in enumerate(tqdm(eval_dataloader)):
-            texts_input_ids, text_attention_mask, text_token_type_ids, labels = item
+            texts_input_ids, text_attention_mask, imgs, labels = item
+            pixels = imgs['pixel_values'][0]
             texts_input_ids = texts_input_ids.to(device)
             text_attention_mask = text_attention_mask.to(device)
-            text_token_type_ids = text_token_type_ids.to(device)
+            pixels = pixels.to(device)
             test_label.extend(labels.tolist())
-            output = model(input_ids=texts_input_ids, attention_mask=text_attention_mask,
-                           token_type_ids=text_token_type_ids)
+            output = model(texts_input_ids, text_attention_mask, pixels)
             output_label = torch.argmax(output, dim=1)
             test_output.extend(output_label.detach().cpu().tolist())
         accuracy = accuracy_score(test_label, test_output)

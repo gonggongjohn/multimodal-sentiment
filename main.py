@@ -35,7 +35,7 @@ if __name__ == "__main__":
                                                                    args.warmup_step))
     train_label_path = os.path.join(args.data_path, 'train.txt')
     test_item_path = os.path.join(args.data_path, 'test_without_label.txt')
-    label_map = {'negative': 0, 'neutral': 1, 'positive': 2}
+    label_map = {'negative': 0, 'neutral': 1, 'positive': 2, 'null': 3}
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
     # Preparing dataset
@@ -47,9 +47,9 @@ if __name__ == "__main__":
     test_img_dict = read_img_by_id(dataset_source_path, test_label_dict, args.img_scale_size)
     train_text_dict, eval_text_dict, train_img_dict, eval_img_dict, train_label_dict, eval_label_dict = split_train_dev(
         train_all_text_dict, train_all_img_dict, train_all_label_dict)
-    train_dataset = MSRDataset(train_text_dict, train_img_dict, train_label_dict, label_map, args.text_model_name)
-    eval_dataset = MSRDataset(eval_text_dict, eval_img_dict, eval_label_dict, label_map, args.text_model_name)
-    test_dataset = MSRDataset(test_text_dict, test_img_dict, test_label_dict, label_map, args.text_model_name)
+    train_dataset = MSRDataset(train_text_dict, train_img_dict, train_label_dict, label_map, args.text_model_name, args.img_model_name)
+    eval_dataset = MSRDataset(eval_text_dict, eval_img_dict, eval_label_dict, label_map, args.text_model_name, args.img_model_name)
+    test_dataset = MSRDataset(test_text_dict, test_img_dict, test_label_dict, label_map, args.text_model_name, args.img_model_name)
     train_dataloader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True)
     eval_dataloader = DataLoader(eval_dataset, batch_size=args.batch_size)
     test_dataloader = DataLoader(test_dataset, batch_size=args.batch_size)
