@@ -1,12 +1,6 @@
 from data_utils import read_folder_text, read_train_tag, separate_train_test_by_label, read_img_by_id, split_train_dev
 from data_pipe import MSRDataset
 from torch.utils.data import DataLoader
-from tqdm import tqdm
-from transformers import XLMRobertaForSequenceClassification, AdamW, get_linear_schedule_with_warmup
-from torch.nn import CrossEntropyLoss
-from sklearn.metrics import precision_score, recall_score, f1_score
-from baseline_model import PureRoberta
-from xlm_train import train_xlm
 import torch
 import argparse
 import os
@@ -20,7 +14,12 @@ if __name__ == "__main__":
     parser.add_argument('--data_path', type=str, default='data/')
     parser.add_argument('--img_scale_size', type=int, default=224)
     parser.add_argument('--text_model_name', type=str, default='xlm-roberta-base')
+    parser.add_argument('--img_model_name', type=str, default='microsoft/swin-base-patch4-window7-224')
     parser.add_argument('--batch_size', type=int, default=16)
+    parser.add_argument('--epoch', type=int, default=6)
+    parser.add_argument('--lr_finetune', type=float, default=1e-5)
+    parser.add_argument('--lr_downstream', type=float, default=2e-3)
+    parser.add_argument('--warmup_step', type=int, default=10)
     args = parser.parse_args()
 
     # Path and params construction

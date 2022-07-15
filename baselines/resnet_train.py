@@ -9,24 +9,16 @@ from tqdm import tqdm
 from sklearn.metrics import precision_score, recall_score, f1_score, accuracy_score
 
 
-if __name__ == "__main__":
-    train_iteration = 4
-    iteration = 10
-    train_label_dict = read_train_tag('data/train.txt')
-    test_label_dict = read_train_tag('data/test_target.txt')
-    train_img_dict = read_img_by_id('data/source/', train_label_dict, 224)
-    test_img_dict = read_img_by_id('data/source/', test_label_dict, 224)
-    label_map = {'neutral': 1, 'negative': 0, 'positive': 2}
-    device = 'cuda' if torch.cuda.is_available() else 'cpu'
+def train_resnet(device: str, loss_log_file: str, eval_log_file: str, train_img_dict: dict, train_label_dict: dict, test_img_dict: dict, test_label_dict: dict, label_map: dict, iteration: int, batch_size: int, lr2: float):
     train_dataset = MSRImageOnlyDataset(train_img_dict, train_label_dict, label_map)
     test_dataset = MSRImageOnlyDataset(test_img_dict, test_label_dict, label_map)
-    train_dataloader = DataLoader(train_dataset, batch_size=32, shuffle=True)
-    test_dataloader = DataLoader(test_dataset, batch_size=32)
+    train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+    test_dataloader = DataLoader(test_dataset, batch_size=batch_size)
     model = resnet50(pretrained=True)
     del model.fc
     model.add_module('fc', Linear(2048, 3))
     loss_func = CrossEntropyLoss()
-    optimizer = AdamW(model.parameters(), lr=1e-2)
+    optimizer = AdamW(model.parameters(), lr=lr2)
     model = model.to(device)
     loss_func = loss_func.to(device)
     print('Model: ResNet-50')

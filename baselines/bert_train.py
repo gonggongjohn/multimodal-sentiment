@@ -4,7 +4,7 @@ from tqdm import tqdm
 from transformers import XLMRobertaForSequenceClassification, AdamW, get_linear_schedule_with_warmup
 from torch.nn import CrossEntropyLoss
 from sklearn.metrics import precision_score, recall_score, f1_score, accuracy_score
-from baseline_model import PureBert
+from baselines.baseline_model import PureBert
 import torch
 
 

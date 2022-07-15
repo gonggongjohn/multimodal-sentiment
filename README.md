@@ -30,27 +30,26 @@ The main dependencies includes:
 ├── README.md
 ├── assets
 │   └── ptamsc_structure.png
-├── baseline.py
-├── baseline_model.py
-├── bert_baseline.py
-├── bert_train.py
+├── baseline.py  # Baseline testing entry
+├── baselines
+│   ├── baseline_model.py
+│   ├── bert_train.py  # Bert baseline training
+│   ├── resnet_train.py  # ResNet baseline training
+│   ├── swin_train.py  # Swin Transformer baseline training
+│   ├── xlm_hypertune.py  # Hyperparameter tuning program
+│   └── xlm_train.py  # XLMRoBERTa baseline training
 ├── data_pipe.py
 ├── data_utils.py
-├── main.py
-├── model.py
+├── main.py  # Main entry
+├── model
+│   ├── model.py
+│   └── roberta.png
 ├── plot
-│   ├── fuse_accuracy.png
 │   ├── plot_clmlf_pretrain.py
 │   ├── plot_clmlf_train.py
 │   ├── plot_fuse_accuracy.py
 │   ├── plot_hypertune.py
-│   ├── plot_resnet_f1.py
-├── resnet_train.py
-├── swin_baseline.py
-├── swin_train.py
-├── xlm_baseline.py
-├── xlm_hypertune.py
-└── xlm_train.py
+└── └── plot_resnet_f1.py
 ```
 
 ## Model Overview
@@ -85,8 +84,7 @@ To reproduce experiments on the original dataset, please use the following struc
 │   ├── test_without_label.txt  # Test items to be predicted
 │   ├── source
 │   │   ├── x.txt  # Paired text-image data goes here
-│   │   ├── x.jpg
-└── └── └── xlm_train.py
+└── └── └── x.jpg
 ```
 
 As illustrated in the project report, the original dataset contains text instances not encoded in UTF-8/ANSI, 
@@ -104,7 +102,12 @@ The optional parameters and its meanings are as follows:
 - \--model: The name of the baseline model to be used for training and validation, can be one of: bert, xlmroberta, resnet, swin, concat, additive
 - \--img_scale_size: The target size of images to feed into the model, default: 224
 - \--text_model_name: The pretrained model name of the text embedding model, default: xlm-roberta-base
+- \--img_model_name:The pretrained model name of the image embedding model, default: microsoft/swin-base-patch4-window7-224
 - \--batch_size: The batch size of all the datasets, default: 16
+- \--epoch: Training iteration number
+- \--lr_finetune: The learning rate of the pretrained backbone
+- \--lr_downstream: The learning rate of the downstream structure
+- \--warmup_step: How many steps to go before the learning rate achieve the assigned number
 
 
 ### Main Model
@@ -117,7 +120,12 @@ The optional parameters and its meanings are as follows:
 
 - \--img_scale_size: The target size of images to feed into the model, default: 224
 - \--text_model_name: The pretrained model name of the text embedding model, default: xlm-roberta-base
+- \--img_model_name:The pretrained model name of the image embedding model, default: microsoft/swin-base-patch4-window7-224
 - \--batch_size: The batch size of all the datasets, default: 16
+- \--epoch: Training iteration number
+- \--lr_finetune: The learning rate of the pretrained backbone
+- \--lr_downstream: The learning rate of the downstream structure
+- \--warmup_step: How many steps to go before the learning rate achieve the assigned number
 
 ## References
 

@@ -1,6 +1,6 @@
 from data_utils import read_train_tag, read_img_by_id
 from data_pipe import MSRImageOnlyDataset
-from baseline_model import PureSwinTransformer
+from baselines.baseline_model import PureSwinTransformer
 from torch.utils.data import DataLoader
 from torch.nn import CrossEntropyLoss
 from transformers import AdamW, get_linear_schedule_with_warmup
