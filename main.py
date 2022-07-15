@@ -1,5 +1,7 @@
 from data_utils import read_folder_text, read_train_tag, separate_train_test_by_label, read_img_by_id, split_train_dev
 from data_pipe import MSRDataset
+from train import train_ptamsc
+from model.model import PTAMSC
 from torch.utils.data import DataLoader
 import torch
 import argparse
@@ -8,10 +10,11 @@ import os
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('--do_train', type=bool, default=False)
-    parser.add_argument('--do_eval', type=bool, default=True)
-    parser.add_argument('--do_test', type=bool, default=True)
+    parser.add_argument('--do_train', action='store_true')
+    parser.add_argument('--do_eval', action='store_true')
+    parser.add_argument('--do_test', action='store_true')
     parser.add_argument('--data_path', type=str, default='data/')
+    parser.add_argument('--log_path', type=str, default='log/')
     parser.add_argument('--img_scale_size', type=int, default=224)
     parser.add_argument('--text_model_name', type=str, default='xlm-roberta-base')
     parser.add_argument('--img_model_name', type=str, default='microsoft/swin-base-patch4-window7-224')
@@ -24,6 +27,12 @@ if __name__ == "__main__":
 
     # Path and params construction
     dataset_source_path = os.path.join(args.data_path, 'source/')
+    loss_log_path = os.path.join(args.log_path,
+                                 'ptamsc_loss_{0}_{1}_{2}.log'.format(args.lr_finetune, args.lr_downstream,
+                                                                   args.warmup_step))
+    eval_log_path = os.path.join(args.log_path,
+                                 'ptamsc_eval_{0}_{1}_{2}.log'.format(args.lr_finetune, args.lr_downstream,
+                                                                   args.warmup_step))
     train_label_path = os.path.join(args.data_path, 'train.txt')
     test_item_path = os.path.join(args.data_path, 'test_without_label.txt')
     label_map = {'negative': 0, 'neutral': 1, 'positive': 2}
@@ -44,5 +53,10 @@ if __name__ == "__main__":
     train_dataloader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True)
     eval_dataloader = DataLoader(eval_dataset, batch_size=args.batch_size)
     test_dataloader = DataLoader(test_dataset, batch_size=args.batch_size)
+
+    model = PTAMSC(args.text_model_name, args.img_model_name)
+
+    if args.do_train:
+        train_ptamsc(device, loss_log_path, eval_log_path, model, train_dataloader, eval_dataloader, args.epoch, args.lr_finetune, args.lr_downstream, args.warmup_step)
 
 
