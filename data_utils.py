@@ -1,4 +1,5 @@
 from sklearn.metrics import precision_score, recall_score, f1_score
+from sklearn.model_selection import train_test_split
 from PIL import Image
 from torchvision import transforms
 import os
@@ -60,6 +61,21 @@ def separate_train_test_by_label(all_data_dict: dict, train_label_dict: dict, te
         if key in test_label_dict:
             test_dict[key] = all_data_dict[key]
     return train_dict, test_dict
+
+
+def split_train_dev(origin_text_dict: dict, origin_img_dict: dict, origin_label_dict: dict):
+    train_text_dict, eval_text_dict, train_img_dict, eval_img_dict, train_label_dict, eval_label_dict = {}, {}, {}, {}, {}, {}
+    key_list = list(origin_label_dict.keys())
+    key_train, key_eval = train_test_split(key_list, test_size=0.1)
+    for key in key_train:
+        train_text_dict[key] = origin_text_dict[key]
+        train_img_dict[key] = origin_img_dict[key]
+        train_label_dict[key] = origin_label_dict[key]
+    for key in key_eval:
+        eval_text_dict[key] = origin_text_dict[key]
+        eval_img_dict[key] = origin_img_dict[key]
+        eval_label_dict[key] = origin_label_dict[key]
+    return train_text_dict, eval_text_dict, train_img_dict, eval_img_dict, train_label_dict, eval_label_dict
 
 
 def read_img_by_id(dir_path: str, data_dict: dict, target_size: int):

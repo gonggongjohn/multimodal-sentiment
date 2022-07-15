@@ -6,13 +6,13 @@ This is the official repository for the final project of DaSE undergraduate cour
 
 ## Setup
 
-本项目使用Python3.8开发完成，相关依赖模块已导出至`requirements.txt`。使用如下命令即可直接安装所有依赖包：
-
+This project is implemented by Python 3.8, all related dependencies have been exported to `requirements.txt`.
+Use the following command to install all the required packages automatically:
 ```shell
 pip -r requirements.txt
 ```
 
-代码运行的主要依赖包及版本如下：
+The main dependencies includes:
 
 - chardet 4.0.0
 - matplotlib 3.3.2
@@ -30,6 +30,7 @@ pip -r requirements.txt
 ├── README.md
 ├── assets
 │   └── ptamsc_structure.png
+├── baseline.py
 ├── baseline_model.py
 ├── bert_baseline.py
 ├── bert_train.py
@@ -39,21 +40,11 @@ pip -r requirements.txt
 ├── model.py
 ├── plot
 │   ├── fuse_accuracy.png
-│   ├── hypertune_lr1.png
-│   ├── hypertune_lr2.png
-│   ├── hypertune_warmup.png
 │   ├── plot_clmlf_pretrain.py
 │   ├── plot_clmlf_train.py
 │   ├── plot_fuse_accuracy.py
 │   ├── plot_hypertune.py
 │   ├── plot_resnet_f1.py
-│   ├── ptamsc_acc.png
-│   ├── ptamsc_f1.png
-│   ├── ptamsc_loss.png
-│   ├── ptamsc_pretrain_acc.png
-│   ├── ptamsc_pretrain_f1.png
-│   ├── ptamsc_pretrain_loss.png
-│   └── resnet_f1.png
 ├── resnet_train.py
 ├── swin_baseline.py
 ├── swin_train.py
@@ -64,39 +55,69 @@ pip -r requirements.txt
 
 ## Model Overview
 
-PTAMSC的主要模型结构如下图所示：
+PTAMSC is a pure transformer-based image-text multimodal classification model. The main structure is as follows:
 
 ![structure](assets/ptamsc_structure.png)
 
 ## Performance
 
-| Model            | Accuracy | Precision | Recall | F1   |
-| ---------------- | -------- | --------- | ------ | ---- |
-| Bert             | 72.99    |           |        |      |
-| XLMRoBERTa       | 73.58    |           |        |      |
-| ResNet           |          |           |        |      |
-| Swin Transformer |          |           |        |      |
-| X+S(Concatenate) |          |           |        |      |
-| X+S(Additive)    |          |           |        |      |
-| PTAMSC           |          |           |        |      |
-
+| Model            | Accuracy  | Precision | Recall    | F1        |
+|------------------|-----------|-----------|-----------|-----------|
+| Bert             | 72.99     | 65.56     | 54.47     | 55.66     |
+| XLMRoBERTa       | 73.58     | 67.62     | 59.48     | 61.52     |
+| ResNet           | 57.93     | 36.01     | 33.71     | 25.59     |
+| Swin Transformer | 66.73     | 57.90     | 54.02     | 55.38     |
+| X+S(Concatenate) | 70.25     | 63.74     | 54.88     | 57.12     |
+| X+S(Additive)    | 71.23     | 66.31     | 54.79     | 55.01     |
+| **PTAMSC**       | **76.51** | **70.88** | **63.34** | **65.69** |
 
 
 ## Reproduce Experiment
 
-若要使用原数据集运行实验，请将图像/文本数据放在`data/source/`中。由于原数据集中包含非utf-8/ANSI编码文本，请先使用GBK编码打开并将其翻译为英语再进行读取。
+### Dataset Preparation
+
+To reproduce experiments on the original dataset, please use the following structure to organize your dataset directory:
+
+```
+.
+├── [Dataset root]
+│   ├── train.txt  # Training label
+│   ├── test_without_label.txt  # Test items to be predicted
+│   ├── source
+│   │   ├── x.txt  # Paired text-image data goes here
+│   │   ├── x.jpg
+└── └── └── xlm_train.py
+```
+
+As illustrated in the project report, the original dataset contains text instances not encoded in UTF-8/ANSI, 
+please open them up with GBK encoding and translate them into English manually.
+Otherwise there will be errors when reading data instances into the model.
 
 ### Baseline Model
 
 ```shell
-python baseline.py --data_path [数据集根目录]
+python baseline.py --model [Name of the baseline model] --data_path [Dataset Root Directory]
 ```
+
+The optional parameters and its meanings are as follows:
+
+- \--model: The name of the baseline model to be used for training and validation, can be one of: bert, xlmroberta, resnet, swin, concat, additive
+- \--img_scale_size: The target size of images to feed into the model, default: 224
+- \--text_model_name: The pretrained model name of the text embedding model, default: xlm-roberta-base
+- \--batch_size: The batch size of all the datasets, default: 16
+
 
 ### Main Model
 
 ```shell
-python main.py --do_train --do_eval --do_test --data_path [数据集根目录]
+python main.py --do_train --do_eval --do_test --data_path [Dataset Root Directory]
 ```
+
+The optional parameters and its meanings are as follows:
+
+- \--img_scale_size: The target size of images to feed into the model, default: 224
+- \--text_model_name: The pretrained model name of the text embedding model, default: xlm-roberta-base
+- \--batch_size: The batch size of all the datasets, default: 16
 
 ## References
 
